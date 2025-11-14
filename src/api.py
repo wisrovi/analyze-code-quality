@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from .code_quality_report import CodeQualityReport, QualityThresholds
 from .complejity_metric import analyze_complexity_internal
 from pydantic import BaseModel
+from typing import List, Dict, Any
 import re
 import subprocess
 import tempfile
@@ -11,6 +12,18 @@ import yaml
 
 class CodeRequest(BaseModel):
     code: str
+    evaluate_pylint: bool = True
+    evaluate_flake8: bool = True
+    evaluate_mypy: bool = True
+    evaluate_complexity: bool = True
+    evaluate_secrets: bool = True
+
+class FileAnalysis(BaseModel):
+    filename: str
+    code: str
+
+class BatchCodeRequest(BaseModel):
+    files: List[FileAnalysis]
     evaluate_pylint: bool = True
     evaluate_flake8: bool = True
     evaluate_mypy: bool = True
@@ -187,3 +200,115 @@ async def analyze_full_code_quality(
     )
 
     return final_report
+
+def analyze_single_file(filename: str, code: str, evaluation_config: Dict[str, bool]) -> Dict[str, Any]:
+    """Analyze a single file and return results."""
+    # 2. Ejecución de Linters (solo si se solicitan)
+    pylint_score = run_pylint(code) if evaluation_config.get('evaluate_pylint', True) else 10.0
+    flake8_score = run_flake8(code) if evaluation_config.get('evaluate_flake8', True) else 0
+    mypy_score = run_mypy(code) if evaluation_config.get('evaluate_mypy', True) else 0
+
+    # 3. 🛡️ EJECUCIÓN DE SECRET SCANNING
+    secret_exposures = analyze_secrets_internal(code) if evaluation_config.get('evaluate_secrets', True) else []
+
+    # 4. 📈 EJECUCIÓN DE COMPLEJIDAD
+    complexity_metrics = analyze_complexity_internal(code) if evaluation_config.get('evaluate_complexity', True) else []
+    complexity_score = calculate_complexity_score(complexity_metrics)
+
+    # 5. VERIFICACIÓN DE UMBRALES DE CALIDAD
+    thresholds = check_quality_thresholds(
+        pylint_score, flake8_score, mypy_score, 
+        complexity_score, len(secret_exposures)
+    )
+    
+    # Forzar los booleanos a True si no se evaluó esa métrica
+    if not evaluation_config.get('evaluate_pylint', True):
+        thresholds.pylint_pass = True
+    if not evaluation_config.get('evaluate_flake8', True):
+        thresholds.flake8_pass = True
+    if not evaluation_config.get('evaluate_mypy', True):
+        thresholds.mypy_pass = True
+    if not evaluation_config.get('evaluate_complexity', True):
+        thresholds.complexity_pass = True
+    if not evaluation_config.get('evaluate_secrets', True):
+        thresholds.secrets_pass = True
+    
+    # Recalcular overall_pass
+    thresholds.overall_pass = all([
+        thresholds.pylint_pass,
+        thresholds.flake8_pass,
+        thresholds.mypy_pass,
+        thresholds.complexity_pass,
+        thresholds.secrets_pass
+    ])
+
+    return {
+        "filename": filename,
+        "pylint_score": pylint_score,
+        "flake8_score": flake8_score,
+        "mypy_score": mypy_score,
+        "complexity_score": complexity_score,
+        "complexity_metrics": [m.dict() if hasattr(m, 'dict') else m for m in complexity_metrics],
+        "secret_exposures": [s.dict() if hasattr(s, 'dict') else s for s in secret_exposures],
+        "thresholds": thresholds.dict()
+    }
+
+@app.post("/analyze-batch-code-quality", response_model=Dict[str, Any])
+async def analyze_batch_code_quality(
+    request: BatchCodeRequest
+) -> Dict[str, Any]:
+    """Analyze multiple files and return batch results."""
+    
+    evaluation_config = {
+        'evaluate_pylint': request.evaluate_pylint,
+        'evaluate_flake8': request.evaluate_flake8,
+        'evaluate_mypy': request.evaluate_mypy,
+        'evaluate_complexity': request.evaluate_complexity,
+        'evaluate_secrets': request.evaluate_secrets
+    }
+    
+    # Analyze each file
+    file_results = []
+    for file_analysis in request.files:
+        result = analyze_single_file(
+            file_analysis.filename, 
+            file_analysis.code, 
+            evaluation_config
+        )
+        file_results.append(result)
+    
+    # Calculate global validator
+    all_files_pass = all(result["thresholds"]["overall_pass"] for result in file_results)
+    passing_count = sum(1 for result in file_results if result["thresholds"]["overall_pass"])
+    total_count = len(file_results)
+    
+    # Prepare table data for manual_test
+    table_data = []
+    for result in file_results:
+        thresholds = result["thresholds"]
+        table_row = [
+            result["filename"],
+            f"{result['pylint_score']:.1f} {'✅' if thresholds['pylint_pass'] else '❌'}",
+            f"{result['flake8_score']} {'✅' if thresholds['flake8_pass'] else '❌'}",
+            f"{result['mypy_score']} {'✅' if thresholds['mypy_pass'] else '❌'}",
+            f"{result['complexity_score']:.1f} {'✅' if thresholds['complexity_pass'] else '❌'}",
+            f"{len(result['secret_exposures'])} {'✅' if thresholds['secrets_pass'] else '❌'}",
+            "✅" if thresholds["overall_pass"] else "❌"
+        ]
+        table_data.append(table_row)
+    
+    # Global validator
+    global_validator = {
+        "all_files_pass": all_files_pass,
+        "passing_count": passing_count,
+        "total_count": total_count,
+        "passing_percentage": round((passing_count / total_count) * 100, 1) if total_count > 0 else 0,
+        "status": "✅ TODOS PASAN CALIDAD" if all_files_pass else "❌ ALGUNOS FALLAN CALIDAD"
+    }
+    
+    return {
+        "table_data": table_data,
+        "headers": ["Archivo", "Pylint", "Flake8", "Mypy", "Complejidad", "Secretos", "Calidad General"],
+        "global_validator": global_validator,
+        "file_results": file_results
+    }
