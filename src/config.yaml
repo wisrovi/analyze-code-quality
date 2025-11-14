@@ -1,0 +1,19 @@
+pylint:
+  min_score: 7.0
+  description: "Puntaje mínimo de Pylint (0-10, más es mejor)"
+
+flake8:
+  max_violations: 10
+  description: "Número máximo de violaciones de Flake8 (menos es mejor)"
+
+mypy:
+  max_errors: 3
+  description: "Número máximo de errores de Mypy (menos es mejor)"
+
+complexity:
+  max_avg_complexity: 5.0
+  description: "Complejidad ciclomática promedio máxima (menos es mejor)"
+
+secrets:
+  max_exposures: 2
+  description: "Número máximo de secretos expuestos (menos es mejor)"
