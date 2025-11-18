@@ -34,6 +34,25 @@ class PRResponse(BaseModel):
     pr_dir: str
 
 
+class RepoResponse(BaseModel):
+    status: str
+    repo_url: str
+    processed_count: int
+    csv_path: str
+    processed_prs: Optional[List[Dict]] = None
+    csv_data: Optional[Dict] = None
+
+
+class OpenPRsRequest(BaseModel):
+    repo_url: HttpUrl
+
+
+class OpenPRsResponse(BaseModel):
+    status: str
+    repo_url: str
+    open_prs: List[Dict]
+
+
 @app.get("/")
 async def root():
     """Endpoint raíz de la API"""
@@ -43,6 +62,7 @@ async def root():
         "endpoints": {
             "/analyze-pr": "POST - Analizar un Pull Request (form data)",
             "/analyze-repo": "POST - Analizar todos los PRs de un repositorio (form data)",
+            "/open-prs": "POST - Obtener PRs abiertos de un repositorio (form data)",
             "/health": "GET - Health check",
         },
     }
@@ -152,15 +172,6 @@ async def analyze_pr(pr_url: str = Form(...), base_dir: str = Form("repos_output
         )
 
 
-class RepoResponse(BaseModel):
-    status: str
-    repo_url: str
-    processed_count: int
-    csv_path: str
-    processed_prs: Optional[List[Dict]] = None
-    csv_data: Optional[Dict] = None
-
-
 @app.post("/analyze-repo", response_model=RepoResponse)
 async def analyze_repo(repo_url: str = Form(...), base_dir: str = Form("repos_output")):
     """
@@ -226,3 +237,109 @@ async def analyze_repo(repo_url: str = Form(...), base_dir: str = Form("repos_ou
         raise HTTPException(
             status_code=500, detail=f"Error interno del servidor: {str(e)}"
         )
+
+
+@app.post("/open-prs", response_model=OpenPRsResponse)
+async def get_open_prs(request: OpenPRsRequest):
+    """
+    Obtiene la lista de PRs abiertos que no están en draft
+
+    Args:
+        request: Objeto con la URL del repositorio
+
+    Returns:
+        OpenPRsResponse con la lista de PRs abiertos
+    """
+    try:
+        logger.info(
+            f"📥 Recibida solicitud para obtener PRs abiertos de: {request.repo_url}"
+        )
+
+        # Importar aquí para evitar problemas de importación circular
+        import sys
+
+        sys.path.append(
+            "/home/wisrovi/Documentos/analyze-code-quality/api/pr_reviewer/api"
+        )
+        from src.github_api import GitHubAPI
+
+        # Crear instancia del GitHubAPI y configurarla
+        github_api = GitHubAPI()
+
+        # Cargar configuración
+        import sys
+
+        sys.path.append(
+            "/home/wisrovi/Documentos/analyze-code-quality/api/pr_reviewer/api"
+        )
+        from src.config_loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        config, _ = config_loader(
+            {"config_file": "config/config.yaml", "rules_file": "config/rules.yaml"}
+        )
+
+        # Inicializar GitHubAPI con configuración
+        github_api({"config": config})
+
+        # Obtener PRs abiertos
+        repo_url = str(request.repo_url)
+        prs_data = github_api.get_open_prs(repo_url)
+
+        # Filtrar PRs que no estén en draft
+        open_prs = []
+        if isinstance(prs_data, list):
+            for pr in prs_data:
+                if isinstance(pr, dict):
+                    # Verificar que no sea draft
+                    if not pr.get("draft", False):
+                        open_prs.append(
+                            {
+                                "number": pr.get("number", pr.get("id", "")),
+                                "title": pr.get("title", ""),
+                                "url": pr.get("url", pr.get("html_url", "")),
+                                "author": pr.get("user", {}).get(
+                                    "login", pr.get("author", "")
+                                ),
+                                "created_at": pr.get("created_at", ""),
+                                "updated_at": pr.get("updated_at", ""),
+                                "state": pr.get("state", "open"),
+                                "draft": pr.get("draft", False),
+                            }
+                        )
+                elif isinstance(pr, str):
+                    # Si es solo URL, agregar información básica
+                    open_prs.append(
+                        {
+                            "url": pr,
+                            "title": f"PR from {pr}",
+                            "author": "unknown",
+                            "state": "open",
+                            "draft": False,
+                        }
+                    )
+
+        logger.info(f"✅ Se encontraron {len(open_prs)} PRs abiertos (no draft)")
+
+        response = OpenPRsResponse(
+            status="success", repo_url=repo_url, open_prs=open_prs
+        )
+
+        return response
+
+    except Exception as e:
+        logger.error(f"❌ Error obteniendo PRs abiertos: {e}")
+        import traceback
+
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500, detail=f"Error interno del servidor: {str(e)}"
+        )
+
+
+if __name__ == "__main__":
+    # Crear directorio de logs si no existe
+    Path("logs").mkdir(exist_ok=True)
+
+    # Ejecutar servidor
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
