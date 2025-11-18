@@ -1,0 +1,225 @@
+{
+  "pr_url": "https://github.com/cimacorporate/004-body-part-segmentation/pull/64",
+  "owner": "cimacorporate",
+  "repo": "004-body-part-segmentation",
+  "pr_number": 64,
+  "files_count": 24,
+  "files": [
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/inference/classification_report.csv",
+      "status": "added",
+      "additions": 6,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/inference/classification_report.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/inference/confusion_matrix.svg",
+      "status": "added",
+      "additions": 1101,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/inference/confusion_matrix.svg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/inference/statistical_values.csv",
+      "status": "added",
+      "additions": 239,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/inference/statistical_values.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/preprocessing.py",
+      "status": "added",
+      "additions": 63,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/preprocessing.py"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/straight_hair.csv",
+      "status": "added",
+      "additions": 76977,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/straight_hair.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/straight_hair.dvc",
+      "status": "added",
+      "additions": 6,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/straight_hair.dvc"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/test/classification_report.csv",
+      "status": "added",
+      "additions": 6,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/test/classification_report.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/test/confusion_matrix.svg",
+      "status": "added",
+      "additions": 1157,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/test/confusion_matrix.svg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/test/statistical_values.csv",
+      "status": "added",
+      "additions": 2001,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/test/statistical_values.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/args.yaml",
+      "status": "added",
+      "additions": 106,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/args.yaml"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/results.csv",
+      "status": "added",
+      "additions": 109,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/results.csv"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/results.png",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/results.png"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/train_batch0.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/train_batch0.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/train_batch1.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/train_batch1.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/train/train_batch2.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/train/train_batch2.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/confusion_matrix.png",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/confusion_matrix.png"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch0_labels.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch0_labels.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch0_pred.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch0_pred.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch1_labels.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch1_labels.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch1_pred.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch1_pred.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch2_labels.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch2_labels.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/20251020/val/val_batch2_pred.jpg",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/20251020/val/val_batch2_pred.jpg"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/README.md",
+      "status": "added",
+      "additions": 2,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/README.md"
+    },
+    {
+      "filename": "api/models/attributes/straight_hair/straight_hair.pt",
+      "status": "added",
+      "additions": 0,
+      "deletions": 0,
+      "patch_url": "",
+      "downloaded": true,
+      "file_path": "/tmp/pr_downloads/api/models/attributes/straight_hair/straight_hair.pt"
+    }
+  ]
+}

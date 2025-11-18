@@ -1,0 +1,28 @@
+services:
+  pr-reviewer-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8034:8000"
+    volumes:
+      - ./repos_output:/app/repos_output
+      - ./results:/app/results
+      - ./api/config:/app/config:ro
+      - ./api/logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - analyze-code-quality_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  analyze-code-quality_default:
+    external: true

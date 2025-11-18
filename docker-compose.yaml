@@ -1,13 +1,23 @@
 version: '3.8'
 
 services:
-  api:
-    build: .
+  quality_files_eval:
+    build: ./api/python_check
     image: wisrovi/analize_code_quality:v1.0
     ports:
       - "8032:8000"
-    # volumes:
-    #   - .:/app
+    volumes:
+      - ./api/python_check:/app
     # command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     # command: tail -f /dev/null
     # command: ./start.sh
+
+  github_download_api:
+    build: ./api/github_download
+    image: wisrovi/github_download_api:v1.0
+    ports:
+      - "8033:8000"
+    environment:
+      - GITHUB_TOKEN=TEMPORARY_PLACEHOLDER
+    volumes:
+      - ./api/github_download:/app
