@@ -1,0 +1,36 @@
+# Reglas de Evaluación de Merge Eligibility
+
+merge_rules:
+  approvals:
+    min_required: 1
+    require_all_reviewers: false
+  comments:
+    max_open_comments: 10
+  changes_requested:
+    must_be_zero: true
+  pr_status:
+    must_be_mergeable: true
+    must_not_be_draft: true
+  quality_validation:
+    enabled: true
+    require_all_pass: true
+    metrics:
+      pylint:
+        enabled: true
+        min_score: 7.0
+      flake8:
+        enabled: true
+        max_violations: 5
+      mypy:
+        enabled: true
+        max_errors: 3
+      complexity:
+        enabled: true
+        max_average: 10.0
+      secrets:
+        enabled: true
+        max_exposures: 0
+
+output:
+  save_evaluation: true
+  evaluation_filename: "merge_evaluation.json"

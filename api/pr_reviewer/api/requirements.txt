@@ -1,0 +1,10 @@
+pandas
+fastapi
+uvicorn[standard]
+pydantic
+requests
+loguru
+pyyaml
+matplotlib
+wpipe
+python-multipart
