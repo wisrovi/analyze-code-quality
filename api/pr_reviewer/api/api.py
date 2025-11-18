@@ -5,7 +5,7 @@ from pydantic import BaseModel, HttpUrl
 from pathlib import Path
 from loguru import logger
 import json
-from typing import Optional
+from typing import Optional, List, Dict
 import uvicorn
 
 import sys
@@ -157,6 +157,8 @@ class RepoResponse(BaseModel):
     repo_url: str
     processed_count: int
     csv_path: str
+    processed_prs: Optional[List[Dict]] = None
+    csv_data: Optional[Dict] = None
 
 
 @app.post("/analyze-repo", response_model=RepoResponse)
