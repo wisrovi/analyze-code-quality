@@ -2,7 +2,7 @@
 
 api:
   github:
-    base_url: "http://192.168.1.137:8033"
+    base_url: "http://analyze-code-quality-github_download_api-1:8000"
     endpoints:
       get_prs: "/api/v1/github/repos/pr-urls"
       download_files: "/api/v1/pr/download-pr-files"
@@ -12,7 +12,7 @@ api:
       download: 60
       analysis: 60
   quality:
-    base_url: "http://192.168.1.137:8032"
+    base_url: "http://analyze-code-quality-quality_files_eval-1:8000"
     endpoints:
       analyze_batch: "/analyze-batch-code-quality"
     timeout:

@@ -8,7 +8,10 @@ import json
 from typing import Optional
 import uvicorn
 
-from pipeline import SinglePRPipeline, PRPipeline
+import sys
+
+sys.path.append("/home/wisrovi/Documentos/analyze-code-quality/api/pr_reviewer/api")
+from main import SinglePRPipeline
 
 # Configurar logger
 logger.add("logs/api.log", rotation="500 MB", retention="10 days", level="INFO")
@@ -27,6 +30,7 @@ class PRResponse(BaseModel):
     proyecto: str
     eligible: bool
     quality_report: dict
+    quality_image: Optional[str]
     pr_dir: str
 
 
@@ -66,7 +70,7 @@ async def analyze_pr(pr_url: str = Form(...), base_dir: str = Form("repos_output
         logger.info(f"📥 Recibida solicitud para analizar PR: {pr_url}")
 
         # Crear instancia del pipeline
-        pipeline = SinglePRPipeline()
+        pipeline = SinglePRPipeline("config/config.yaml", "config/rules.yaml")
 
         # Preparar argumentos
         base_path = Path(base_dir)
@@ -100,6 +104,24 @@ async def analyze_pr(pr_url: str = Form(...), base_dir: str = Form("repos_output
         with open(quality_report_path, "r", encoding="utf-8") as f:
             quality_report = json.load(f)
 
+        # Verificar si existe la imagen del reporte
+        quality_image_path = pr_dir / "quality_report.png"
+        quality_image_base64 = None
+
+        if quality_image_path.exists():
+            try:
+                import base64
+
+                with open(quality_image_path, "rb") as img_file:
+                    quality_image_base64 = base64.b64encode(img_file.read()).decode(
+                        "utf-8"
+                    )
+                logger.info(f"✅ Imagen de reporte encontrada: {quality_image_path}")
+            except Exception as e:
+                logger.warning(f"⚠️ No se pudo leer la imagen: {e}")
+        else:
+            logger.warning(f"⚠️ No se encontró imagen de reporte: {quality_image_path}")
+
         logger.info(
             f"✅ Análisis completado exitosamente para PR #{result['pr_number']}"
         )
@@ -112,6 +134,7 @@ async def analyze_pr(pr_url: str = Form(...), base_dir: str = Form("repos_output
             proyecto=result["proyecto"],
             eligible=result["eligible"],
             quality_report=quality_report,
+            quality_image=quality_image_base64,
             pr_dir=str(result["pr_dir"]),
         )
 
@@ -152,7 +175,14 @@ async def analyze_repo(repo_url: str = Form(...), base_dir: str = Form("repos_ou
         logger.info(f"📥 Recibida solicitud para analizar repositorio: {repo_url}")
 
         # Crear instancia del pipeline
-        pipeline = PRPipeline()
+        import sys
+
+        sys.path.append(
+            "/home/wisrovi/Documentos/analyze-code-quality/api/pr_reviewer/api"
+        )
+        from main import PRPipeline
+
+        pipeline = PRPipeline("config/config.yaml", "config/rules.yaml")
 
         # Preparar argumentos
         base_path = Path(base_dir)

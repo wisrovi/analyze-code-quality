@@ -53,6 +53,7 @@ def test_single_pr_analysis():
             quality_report = result.get("quality_report", {})
             if quality_report:
                 print(f"   Quality Report Keys: {list(quality_report.keys())}")
+                print(quality_report)
 
             print("\n🎉 Single PR analysis test completed successfully!")
             return True
